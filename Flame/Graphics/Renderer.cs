@@ -81,6 +81,40 @@ namespace Flame.Graphics
             }
         }
 
+        public void DrawModel(Model Model, Vector3 Position, Camera3D Camera)
+        {
+            foreach (ModelMesh Mesh in Model.Meshes)
+            {
+                foreach (BasicEffect Effect in Mesh.Effects)
+                {
+                    Effect.World = Matrix.Identity * Matrix.CreateTranslation(Position);
+                    Effect.View = Camera.View;
+                    Effect.Projection = Camera.Projection;
+                    Effect.EnableDefaultLighting();
+                    Effect.DirectionalLight0.DiffuseColor = new Vector3(1, 1, 1); // a red light
+                    Effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);  // coming along the x-axis
+                    Effect.DirectionalLight0.SpecularColor = new Vector3(1, 1, 1); // with green highlights
+                }
+                Mesh.Draw();
+            }
+        }
+
+        public void DrawModel(Model Model, Vector3 Position, Effect Effect, Camera3D Camera)
+        {
+            foreach (ModelMesh Mesh in Model.Meshes)
+            {
+                foreach (EffectPass Pass in Effect.CurrentTechnique.Passes)
+                {
+                    Effect.Parameters["WorldViewProjection"].SetValue(Matrix.Identity * Matrix.CreateTranslation(Position) * Camera.View * Camera.Projection);
+                    Effect.Parameters["World"].SetValue(Matrix.Identity * Matrix.CreateTranslation(Position));
+                    Effect.Parameters["View"].SetValue(Camera.View);
+                    Effect.Parameters["Projection"].SetValue(Camera.Projection);
+                    Pass.Apply();
+                }
+                Mesh.Draw();
+            }
+        }
+
         public void DrawText(SpriteFont Font, string Text, int X, int Y)
         {
             SpriteBatch.DrawString(Font, Text, new Vector2(X, Y), Color.White);
