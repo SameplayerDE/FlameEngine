@@ -20,7 +20,7 @@ namespace Flame.Graphics
         public Camera(Viewport viewport)
         {
             Viewport = viewport;
-            SetFocus(Point.Zero);
+            SetFocus(Viewport.Bounds.Center);
         }
 
         public void SetFocus(Point target)
