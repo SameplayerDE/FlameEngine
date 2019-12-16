@@ -10,7 +10,7 @@ namespace Flame
     public static class Flame
     {
 
-        public static string VERSION = "0.0.1";
+        public static readonly string VERSION = "0.0.1";
         public static Random Random = new Random();
         public static GraphicsDevice GraphicsDevice;
 
