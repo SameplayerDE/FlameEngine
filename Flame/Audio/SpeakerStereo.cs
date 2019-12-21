@@ -24,11 +24,6 @@ namespace Flame.Audio
             this.Position = Position;
         }
 
-        public void Play()
-        {
-
-        }
-
         public virtual void Update()
         {
 

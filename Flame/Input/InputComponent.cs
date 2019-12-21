@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Flame.Eventsystem;
 
 namespace Flame.Input
 {
@@ -133,6 +134,39 @@ namespace Flame.Input
                 UsingKeyboard = true;
             }
 
+            if (CurrentKeyboardState.GetPressedKeyCount() > 0)
+            {
+                Flame.EventHandler.CallEvent(new KeyBoardKeyDownEvent(CurrentKeyboardState.GetPressedKeys()));
+            }
+
+            if (OldKeyboardState.GetPressedKeyCount() > 0 && CurrentKeyboardState.GetPressedKeyCount() <= OldKeyboardState.GetPressedKeyCount())
+            {
+                List<Keys> releasedKeys = new List<Keys>();
+                foreach (Keys key in OldKeyboardState.GetPressedKeys())
+                {
+                    if (!CurrentKeyboardState.GetPressedKeys().Contains<Keys>(key))
+                    {
+                        releasedKeys.Add(key);
+                    }
+                }
+                if (releasedKeys.Count > 0)
+                    Flame.EventHandler.CallEvent(new KeyBoardKeyReleasedEvent(releasedKeys.ToArray()));
+            }
+
+            if (OldKeyboardState.GetPressedKeyCount() <= CurrentKeyboardState.GetPressedKeyCount() && OldKeyboardState.GetPressedKeyCount() >= 0)
+            {
+                List<Keys> pressedKeys = new List<Keys>();
+                foreach (Keys key in CurrentKeyboardState.GetPressedKeys())
+                {
+                    if (!OldKeyboardState.GetPressedKeys().Contains<Keys>(key))
+                    {
+                        pressedKeys.Add(key);
+                    }
+                }
+                if (pressedKeys.Count > 0)
+                    Flame.EventHandler.CallEvent(new KeyBoardKeyPressedEvent(pressedKeys.ToArray()));
+            }
+
             foreach (var inputAction in _actions.Values)
             {
                 inputAction.IsTriggered = false;
@@ -149,6 +183,7 @@ namespace Flame.Input
                     else if (inputAction.KeyButton.HasValue &&
                              CurrentKeyboardState.IsKeyDown(inputAction.KeyButton.Value))
                     {
+                        
                         inputAction.IsTriggered = true;
                     }
 
